@@ -1,0 +1,15 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "devTinder backend",
+  "main": "index.js",
+  "scripts": {
+    "start":"node app.js",
+    "dev":"nodemon app.js"
+  },
+  "author": "hsb",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
