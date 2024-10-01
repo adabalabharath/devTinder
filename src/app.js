@@ -1,8 +1,10 @@
 let express = require("express");
 const connectDB = require("./config/database");
 const User = require("./model/Schema");
-
+const bodyParser=require('body-parser')
 let app = express();
+
+app.use(bodyParser.json());
 
 app.post("/signup", async (req, res) => {
   console.log(req.body);
@@ -17,9 +19,14 @@ app.post("/signup", async (req, res) => {
   let user = new User(userDetails);
   try {
     await user.save();
-    res.send("user added successfully");
+    res.status(201).send({
+            message: 'User created successfully',
+            user
+        });
   } catch (error) {
-    res.status(404).send("unsuccessful");
+    res.status(500).send({
+            message: 'User not created',
+        });
   }
 });
 
