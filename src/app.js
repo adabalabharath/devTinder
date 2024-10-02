@@ -13,7 +13,7 @@ app.use(express.json());
 // })
 // app.get("/hello/id",(req,res,next)=>{
 //   res.send("hello-id-route")
-  
+
 // })
 
 // app.use("/",(req,res,next)=>{
@@ -34,7 +34,7 @@ app.post("/signup", async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({
-      message: "User not created",
+      message: error.message,
     });
   }
 });
@@ -76,25 +76,28 @@ app.get("/getId/:id", async (req, res) => {
   }
 });
 
-app.delete("/delete/:id",async(req,res)=>{
-  try{
-    await User.findOneAndDelete(req.params.id)
-    res.send('deleted successfully')
-  }catch(err){
-      res.send(err.message)
+app.delete("/delete/:id", async (req, res) => {
+  try {
+    await User.findOneAndDelete(req.params.id);
+    res.send("deleted successfully");
+  } catch (err) {
+    res.send(err.message);
   }
-})
+});
 
-app.patch("/update/:id",async(req,res)=>{
-  try{
-    let id=req.params.id
-    let body=req.body
-    let updated=await User.findByIdAndUpdate(id,body,{returnDocument:'after'})
-    res.send({status:'updated Successfully',updated})
-  }catch(error){
-    res.send(error.message)
+app.patch("/update/:id", async (req, res) => {
+  try {
+    let id = req.params.id;
+    let body = req.body;
+    let updated = await User.findByIdAndUpdate(id, body, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+    res.send({ status: "updated Successfully", updated });
+  } catch (error) {
+    res.send(error.message);
   }
-})
+});
 
 connectDB()
   .then(() => {
