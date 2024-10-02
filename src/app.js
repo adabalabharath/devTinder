@@ -23,10 +23,15 @@ app.use(express.json());
 // })
 
 app.post("/signup", async (req, res) => {
-  console.log(req.body);
-
-  let user = new User(req.body);
   try {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,15}$/;
+    if (!passwordRegex.test(req.body.password)) {
+      throw new Error(
+        "This password is invalid,it should be 8 to 15 characters long,should Contain at least one uppercase letter,one lowercase letter,one numeric,one special character"
+      );
+    }
+    let user = new User(req.body);
     await user.save();
     res.status(201).send({
       message: "User created successfully",
@@ -89,6 +94,17 @@ app.patch("/update/:id", async (req, res) => {
   try {
     let id = req.params.id;
     let body = req.body;
+    let AllowedUpdates = ["skills", "photoUrl", "gender", "age", "password"];
+    let isAllowed = Object.keys(body).every((k) => AllowedUpdates.includes(k));
+
+    if (!isAllowed) {
+      throw new Error("update not allowed");
+    }
+
+    if (body.skills.length > 5) {
+      throw new Error("only 5 skills are allowed");
+    }
+
     let updated = await User.findByIdAndUpdate(id, body, {
       returnDocument: "after",
       runValidators: true,
