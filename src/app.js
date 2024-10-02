@@ -4,19 +4,12 @@ const User = require("./model/Schema");
 const bodyParser=require('body-parser')
 let app = express();
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   console.log(req.body);
-  const userDetails = {
-    firstName: "msd",
-    lastName: "ms",
-    email: "msd@gmail.com",
-    password: "msd@123",
-    age: 30,
-    gender: "male",
-  };
-  let user = new User(userDetails);
+  
+  let user = new User(req.body);
   try {
     await user.save();
     res.status(201).send({
@@ -29,6 +22,28 @@ app.post("/signup", async (req, res) => {
         });
   }
 });
+
+app.get("/getUser", async (req,res)=>{
+  try{
+   const user= await User.find({email:req.body.email})
+   if(user.length<1){
+    res.send('no user found')
+   }else{
+     res.send(user)
+   }
+  }catch(error){
+    res.status(500).send('something went wrong')
+  }
+})
+
+app.get("/getAll", async (req,res)=>{
+  try{
+   const user= await User.find()
+   res.send(user)
+  }catch(error){
+    res.status(500).send('something went wrong')
+  }
+})
 
 connectDB()
   .then(() => {
