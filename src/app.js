@@ -2,6 +2,7 @@ let express = require("express");
 const connectDB = require("./config/database");
 const User = require("./model/Schema");
 const bodyParser = require("body-parser");
+const validator=require("validator")
 let app = express();
 
 app.use(express.json());
@@ -24,14 +25,24 @@ app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   try {
-    const passwordRegex =
-      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,15}$/;
-    if (!passwordRegex.test(req.body.password)) {
+    let user = new User(req.body);
+    
+    if (!validator.isStrongPassword(req.body?.password)) {
       throw new Error(
         "This password is invalid,it should be 8 to 15 characters long,should Contain at least one uppercase letter,one lowercase letter,one numeric,one special character"
       );
     }
-    let user = new User(req.body);
+    if (!validator.isEmail(req.body?.email)) {
+      throw new Error(
+        "Invalid email format"
+      );
+    }
+    if (!validator.isURL(req.body?.photoUrl)) {
+      throw new Error(
+        "Invalid URL format"
+      );
+    }
+    
     await user.save();
     res.status(201).send({
       message: "User created successfully",
