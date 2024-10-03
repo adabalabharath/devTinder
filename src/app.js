@@ -33,7 +33,7 @@ app.post("/signup", async (req, res) => {
     const { firstName, lastName, email, password, gender, age, skills } =
       req.body;
     let hashPassword = await bcrypt.hash(password, 10);
-    console.log(hashPassword);
+
     let user = new User({
       firstName,
       lastName,
@@ -136,12 +136,11 @@ app.post("/login", async (req, res, next) => {
       throw new Error("invalid creds");
     }
 
-    let validPassword = await bcrypt.compare(password, user.password);
+    let validPassword = await user.validPassword(password);
 
     if (validPassword) {
-      let token = await jwt.sign({ _id: user._id }, "devTinder",{expiresIn:'20s'})
-
-      res.cookie("token", token,{ maxAge: 20 * 1000 });
+      let token = await user.getJWT();
+      res.cookie("token", token, { maxAge: 20 * 1000 });
       res.send("logged in successfully");
     } else {
       throw new Error("invalid creds");
@@ -160,14 +159,14 @@ app.get("/profile", userAuth, async (req, res) => {
   }
 });
 
-app.post('/sendRequest',userAuth,async(req,res)=>{
-  try{
-     const {user}=req
-     res.send(user.firstName+' sent request')
-  }catch(error){
-    res.send(error.message)
+app.post("/sendRequest", userAuth, async (req, res) => {
+  try {
+    const { user } = req;
+    res.send(user.firstName + " sent request");
+  } catch (error) {
+    res.send(error.message);
   }
-})
+});
 
 connectDB()
   .then(() => {
