@@ -1,8 +1,8 @@
 let express = require("express");
 const connectDB = require("./config/database");
 const User = require("./model/Schema");
-const bodyParser = require("body-parser");
-const validator=require("validator")
+const bcrypt = require("bcrypt");
+const validatePost = require("./utils/signup");
 let app = express();
 
 app.use(express.json());
@@ -25,24 +25,20 @@ app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   try {
-    let user = new User(req.body);
-    
-    if (!validator.isStrongPassword(req.body?.password)) {
-      throw new Error(
-        "This password is invalid,it should be 8 to 15 characters long,should Contain at least one uppercase letter,one lowercase letter,one numeric,one special character"
-      );
-    }
-    if (!validator.isEmail(req.body?.email)) {
-      throw new Error(
-        "Invalid email format"
-      );
-    }
-    if (!validator.isURL(req.body?.photoUrl)) {
-      throw new Error(
-        "Invalid URL format"
-      );
-    }
-    
+    validatePost(req);
+    const { firstName, lastName, email, password, gender, age, skills } =
+      req.body;
+    let hashPassword = await bcrypt.hash(password, 10);
+    console.log(hashPassword);
+    let user = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashPassword,
+      gender,
+      age,
+      skills,
+    });
     await user.save();
     res.status(201).send({
       message: "User created successfully",
@@ -50,7 +46,7 @@ app.post("/signup", async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({
-      message: error.message,
+      error: error.message,
     });
   }
 });
@@ -123,6 +119,25 @@ app.patch("/update/:id", async (req, res) => {
     res.send({ status: "updated Successfully", updated });
   } catch (error) {
     res.send(error.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    let emailUser = await User.findOne({email});
+    console.log(emailUser);
+    if (!emailUser) {
+      throw new Error("Invalid Credentials");
+    }
+    let validPassword = await bcrypt.compare(password, emailUser.password)
+    if (validPassword) {
+      res.send("logged in successfully");
+    } else {
+      throw new Error("Invalid credentails");
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
   }
 });
 
