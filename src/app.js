@@ -3,9 +3,13 @@ const connectDB = require("./config/database");
 const User = require("./model/Schema");
 const bcrypt = require("bcrypt");
 const validatePost = require("./utils/signup");
+let cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const userAuth = require("./middlewares/auth");
 let app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 // app.use("/hello",(req,res,next)=>{
 //   res.send("hello-route")
@@ -122,24 +126,48 @@ app.patch("/update/:id", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => {
+app.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    let emailUser = await User.findOne({email});
-    console.log(emailUser);
-    if (!emailUser) {
-      throw new Error("Invalid Credentials");
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error("invalid creds");
     }
-    let validPassword = await bcrypt.compare(password, emailUser.password)
+
+    let validPassword = await bcrypt.compare(password, user.password);
+
     if (validPassword) {
+      let token = await jwt.sign({ _id: user._id }, "devTinder",{expiresIn:'20s'})
+
+      res.cookie("token", token,{ maxAge: 20 * 1000 });
       res.send("logged in successfully");
     } else {
-      throw new Error("Invalid credentails");
+      throw new Error("invalid creds");
     }
   } catch (error) {
-    res.status(400).send(error.message);
+    res.send(error.message);
   }
 });
+
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    const { user } = req;
+    res.send(user);
+  } catch (error) {
+    res.send(error.message);
+  }
+});
+
+app.post('/sendRequest',userAuth,async(req,res)=>{
+  try{
+     const {user}=req
+     res.send(user.firstName+' sent request')
+  }catch(error){
+    res.send(error.message)
+  }
+})
 
 connectDB()
   .then(() => {
