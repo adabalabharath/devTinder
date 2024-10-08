@@ -15,12 +15,17 @@
         "Invalid email format"
       );
     }
-    // if (!validator.isURL(req.body?.photoUrl)) {
-    //   throw new Error(
-    //     "Invalid URL format"
-    //   );
-    // }
     
 }
 
-module.exports=validatePost
+const validFields=(req)=>{
+    console.log(req.body)
+    let allowedFields=['firstName','lastName','email','gender','skills','age']
+    let fields = Object.keys(req.body).every(field => allowedFields.includes(field));
+    console.log(fields)
+    return fields
+  
+}
+
+
+module.exports={validatePost,validFields}

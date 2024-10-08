@@ -1,9 +1,8 @@
-
-const express=require('express');
-const bcrypt=require('bcrypt')
-const validatePost = require('../utils/signup');
-const User = require('../model/Schema');
-const authRouter=express.Router()
+const express = require("express");
+const bcrypt = require("bcrypt");
+const {validatePost} = require("../utils/signup");
+const User = require("../model/Schema");
+const authRouter = express.Router();
 
 authRouter.post("/signup", async (req, res) => {
   try {
@@ -47,7 +46,7 @@ authRouter.post("/login", async (req, res, next) => {
 
     if (validPassword) {
       let token = await user.getJWT();
-      res.cookie("token", token, { maxAge: 20 * 1000 });
+      res.cookie("token", token);
       res.send("logged in successfully");
     } else {
       throw new Error("invalid creds");
@@ -57,4 +56,14 @@ authRouter.post("/login", async (req, res, next) => {
   }
 });
 
-module.exports=authRouter
+authRouter.post("/logout", (req, res) => {
+  try {
+    res.cookie("token", null, { expires: new Date(Date.now()) });
+    res.send("logged out successfully");
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+
+module.exports = authRouter;
