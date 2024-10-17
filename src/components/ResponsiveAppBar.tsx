@@ -13,6 +13,8 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Grid } from "@mui/material";
+import { useSelector } from "react-redux";
+import { response } from "../utils/Types";
 
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
@@ -20,6 +22,8 @@ function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const store = useSelector((store: response) => store);
+  console.log(store);
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -31,49 +35,60 @@ function ResponsiveAppBar() {
   return (
     <AppBar position="static" color="default">
       <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{bgColor:'palegreen'}}>
+        <Toolbar disableGutters sx={{ bgColor: "palegreen" }}>
           <Grid container justifyContent={"space-between"}>
-              <Typography
-                variant="h6"
-                noWrap
-                component="a"
-                sx={{
-                  mr: 2,
-                  display: { xs: "none", md: "flex" },
-                  fontFamily: "monospace",
-                  fontWeight: 700,
-                  letterSpacing: ".3rem",
-                  color: "inherit",
-                  textDecoration: "none",
-                }}
-              >
-                🧑‍💻DevTinder
-              </Typography>
-            
-              <Typography
-                variant="h5"
-                noWrap
-                component="a"
-                sx={{
-                  mr: 2,
-                  display: { xs: "flex", md: "none" },
-                  flexGrow: 1,
-                  fontFamily: "monospace",
-                  fontWeight: 700,
-                  letterSpacing: ".3rem",
-                  color: "inherit",
-                  textDecoration: "none",
-                }}
-              >
-                🧑‍💻DevTinder
-              </Typography>
-            
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              🧑‍💻DevTinder
+            </Typography>
+
+            <Typography
+              variant="h5"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: { xs: "flex", md: "none" },
+                flexGrow: 1,
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              🧑‍💻DevTinder
+            </Typography>
+
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
+              {store.user?.length > 0 ? (
+                <Grid
+                  item
+                  display="flex"
+                  flexDirection="row"
+                  columnGap={1}
+                  alignItems="center"
+                >
+                  <Typography>Welcome, {store.user[0]?.firstName}</Typography>
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <Avatar alt="User Avatar" src={store.user[0]?.photoUrl} />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              ) : null}
               <Menu
                 sx={{ mt: "45px" }}
                 id="menu-appbar"
