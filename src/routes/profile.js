@@ -11,7 +11,7 @@ profileRouter.get("/profile", userAuth, async (req, res) => {
     const { user } = req;
     res.send(user);
   } catch (error) {
-    res.send(error.message);
+    res.status(401).send(error.message);
   }
 });
 
@@ -29,7 +29,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     await loggedInUser.save();
     res.send("updated successfully");
   } catch (error) {
-    res.send(error.message);
+    res.status(401).send(error.message);
   }
 });
 
@@ -46,7 +46,7 @@ profileRouter.patch("/profile/edit/password", userAuth, async (req, res) => {
     await loggedInUser.save();
     res.send({status:"password updated successfully",data:loggedInUser});
   } catch (error) {
-    res.send(error.message);
+    res.status(401).send(error.message);
   }
 });
 

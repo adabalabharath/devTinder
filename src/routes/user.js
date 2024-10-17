@@ -78,7 +78,7 @@ userRouter.get('/users/feed',userAuth,async(req,res)=>{
     }
    res.send(showFeed)
   }catch(error){
-    res.send(error.message)
+    res.status(401).send(error.message)
   }
 })
 

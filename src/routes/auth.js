@@ -52,7 +52,7 @@ authRouter.post("/login", async (req, res, next) => {
       throw new Error("invalid creds");
     }
   } catch (error) {
-    res.send(error.message);
+    res.status(401).send(error.message);
   }
 });
 

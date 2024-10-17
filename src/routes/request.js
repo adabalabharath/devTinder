@@ -53,7 +53,7 @@ requestRouter.post(
         data: connection,
       });
     } catch (error) {
-      res.send(error.message);
+      res.status(401).send(error.message);
     }
   }
 );
@@ -91,7 +91,7 @@ requestRouter.post("/review/:status/:requestId", userAuth, async (req, res) => {
     let changedStatus = await requests.save();
     res.send({ status: `status changed to ${status}`, data: changedStatus });
   } catch (error) {
-    res.send(error.message);
+    res.status(401).send(error.message);
   }
 });
 
