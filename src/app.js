@@ -6,6 +6,7 @@ const validatePost = require("./utils/signup");
 let cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const userAuth = require("./middlewares/auth");
+const cors=require('cors')
 let app = express();
 
 app.use(express.json());
@@ -15,7 +16,10 @@ const authRouter=require('./routes/auth')
 const profileRouter=require('./routes/profile')
 const requestRouter=require('./routes/request');
 const userRouter = require("./routes/user");
-
+app.use(cors({
+  origin:'http://localhost:5173',
+  credentials:true
+}))
 app.use('/',authRouter)
 app.use('/',profileRouter)
 app.use('/',requestRouter)
