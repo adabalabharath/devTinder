@@ -23,6 +23,7 @@ type logType = {
 
 const Login = () => {
   const [login, setLogin] = useState<logType>({ email: "", password: "" });
+  const [error,setError]=useState('')
   const dispatch = useDispatch();
   const store = useSelector((store: response) => store);
   const navigate = useNavigate();
@@ -35,9 +36,11 @@ const Login = () => {
       let response = await axios.post(BASE_URL + "/login", login, {
         withCredentials: true,
       });
+      setError('')
       dispatch({ type: ADD_USER, payload: response.data.user });
       return navigate("/");
-    } catch (error) {
+    } catch (error:any) {
+      setError(error.response.data)
       console.log(error);
     }
   };
@@ -68,6 +71,9 @@ const Login = () => {
             <InputLabel>password</InputLabel>
             <TextField onChange={handleChange} name="password" />
           </Grid>
+          {error&&<Grid item>
+          <Typography color='error'>{error}</Typography>
+         </Grid>}
           <Grid item>
             <Button variant="contained" onClick={handleLogin}>
               Login
