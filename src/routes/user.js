@@ -66,13 +66,12 @@ userRouter.get('/users/feed',userAuth,async(req,res)=>{
        uniqId.add(element.fromId)
        uniqId.add(element.toUserId)
     });
-    //console.log(uniqList)
     const showFeed=await User.find({
       $and:[
         {_id:{$nin:Array.from(uniqId)}},
       {_id:{$ne:loggedInUser._id}}
       ]
-    }).skip(skip).limit(limit)
+    }).select('firstName age gender photo skills').skip(skip).limit(limit)
     if(showFeed.length===0){
       res.send('sorry,out of data')
     }
