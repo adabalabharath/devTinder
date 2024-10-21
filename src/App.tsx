@@ -20,9 +20,8 @@ function App() {
   const fetchUser = async () => {
     try {
       let response = await axios.get("http://localhost:7777/profile",{withCredentials:true});
-      console.log(response.data);
       dispatch({ type: ADD_USER, payload: response.data });
-      if(!response.data[0].firstName){
+      if(!response.data.firstName){
         navigate('/login')
       }
     } catch (error) {
