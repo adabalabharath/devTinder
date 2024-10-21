@@ -15,7 +15,7 @@ userRouter.get("/users/requests/received", userAuth, async (req, res) => {
       .populate("fromId", "firstName lastName gender age skills");
     res.json({ status: "fetched successfully", data: requests });
   } catch (error) {
-    res.send(error.message);
+    res.status(404).send(error.message);
   }
 });
 
@@ -40,7 +40,7 @@ userRouter.get("/users/connections", userAuth, async (req, res) => {
 
     res.json({ status: "fetched successfully", data: connections });
   } catch (error) {
-    res.send(error.message);
+    res.status(404).send(error.message);
   }
 });
 
